@@ -1,0 +1,44 @@
+{% extends 'base.html'%}
+{% load static %}
+
+
+{% block title %}Lista zadan{% endblock %}
+{% block content %}
+<div class="topnav">
+  <a  href="{% url 'main:start' %}">lista projektów</a>
+
+  <a href="{% url 'main:add_task' %}">dodaj zadanie</a>
+  <a href="#about">About</a>
+</div>
+<div>
+Lista zadań
+  <br><br>
+</div>
+<table id="customers">
+  <tr>
+    <th class="lp">Lp</th>
+    <th>Zadania</th>
+    <th>Branch</th>
+    <th>difficulty</th>
+    <th>weight</th>
+    <th>status</th>
+  </tr>
+  {% for zadanie in zadania %}
+  <tr>
+    <td class="lp">{{ zadanie.id }}</td>
+    <td><a href="{% url 'main:check_task' zadanie.id %}">{{ zadanie.title }}</a></td>
+
+
+
+
+
+    <td>{{ zadanie.branch }}</td>
+
+
+    <td>{{ zadanie.level }}</td>
+    <td>{{ zadanie.weight }}</td>
+    <td>{{ zadanie.status }}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}
