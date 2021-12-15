@@ -4,30 +4,44 @@ from .database import Database as Db
 
 
 class Projects(models.Model):
-    project = models.CharField(max_length=255, blank=True)
+    project = models.CharField(max_length=255, blank=True, unique=True)
     created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.id} - {self.project}"
 
-class Task(models.Model):
+class Weight():
 
-    WEIGHT = {(0, 'minor'), (1, 'major'), (2, 'critical')}
-    LEVEL = {(0, 'easy'), (1, 'medium'), (2, 'hard')}
-    STATUS = {(0, 'not started'), (1, 'in progress'), (2, 'done')}
-    BRANCH = {(0, 'todo'), (1, 'potencjalne bledy uzytkownika'),
-              (2, 'znalezione bledy')}
+     MINOR, MAJOR, CRITICAL = 0, 1, 2
+     WEIGHT = ((MINOR, 'Minor'), (MAJOR, 'Major'), (CRITICAL, 'Critical'))
+
+class Level():
+
+    EASY, MEDIUM, HARD = 0, 1, 2
+    LEVEL = ((EASY, 'Easy'), (MEDIUM, 'Medium'), (HARD, 'Hard'))
+
+class Status():
+
+    NOT_STARTED, IN_PROGRESS, DONE = 0, 1, 2
+    STATUS = ((NOT_STARTED, 'Not started'), (IN_PROGRESS, 'In progress'), (DONE, 'Done'))
+
+class Branch():
+
+    TODO, POTTENTIAL_ERRORS, FOUND = 0, 1, 2
+    BRANCH = ((TODO, 'todo'), (POTTENTIAL_ERRORS, 'potencjalne błedy użytkownika'), (FOUND, 'znalezione błędy'))
+
+class Task(models.Model):
 
     title = models.CharField(max_length=255, unique=True)
     task = models.TextField()
-    branch = models.IntegerField(choices=BRANCH)
+    branch = models.PositiveSmallIntegerField(choices=Branch.BRANCH, default=0)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     timeneed = models.IntegerField()
     timedone = models.DecimalField(max_digits=6, decimal_places=2,default=0)
-    weight = models.IntegerField(choices=WEIGHT)
-    level = models.IntegerField(choices=LEVEL)
-    status = models.IntegerField(choices=STATUS)
+    weight = models.PositiveSmallIntegerField(choices=Weight.WEIGHT, default=0)
+    level = models.PositiveSmallIntegerField(choices=Level.LEVEL, default=0)
+    status = models.PositiveSmallIntegerField(choices=Status.STATUS, default=0)
     projekt = models.ForeignKey(Projects, on_delete=models.CASCADE, default=None)
 
     def __str__(self):

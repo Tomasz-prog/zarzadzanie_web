@@ -2,12 +2,18 @@
 {% load static %}
 
 {% block title %}show_task{% endblock %}
-{% block content %
+{% block content %}
 <div class="topnav">
   <a href="{% url 'main:start' %}">lista projektów</a>
 
   <a href="#lista_powrot">Lista zadan</a>
   <a href="#about">About</a>
 </div>
-proba generalna
+{% for zadanie in zadania %}
+  {{ zadanie.title }}<br>
+  {{ zadanie.task }}<br>
+  {{ zadanie.timeneed}}<br>
+  {{ zadanie.status}}
+{% endfor %}
+
 {% endblock %}

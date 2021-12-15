@@ -1,46 +1,28 @@
 {% extends 'base.html'%}
 {% load static %}
 
-{% block title %}details{% endblock %}
+{% block title %}TASK{% endblock %}
 {% block content %}
 <div class="topnav">
   <a href="{% url 'main:start' %}">lista projektów</a>
-  <a href="#ddd">Zadania</a>
+  <a href="{% url 'main:zadania' numer_projektu %}">Zadania</a>
   <a class="active" href="#contact">edycja</a>
-  <a href="#about">About</a>
+<!--  <a href="#about">About</a>-->
 </div>
-<h2> Dodaj zadanie</h2>
-<form method="POST">
+
+<form method="POST" enctype="multipart/form-data">
 {% csrf_token %}
-    <p>
-        <label for="id_title">Title</label>
-        <input type="text" name="title" maxlength="255" required id="id_title">
-    </p>
-    <p>
-        <label for="id_task">Content</label>
-        <textarea name="task" cols="40" rows="10" required id="id_task"></textarea>
-    </p>
-    <p>
-        <label for="id_branch">Branch</label>
-        <input type="checkbox" name="branch" id="id_branch">
-    </p>
-    <p>
-        <label for="id_timeneed">Time need</label>
-        <input type="checkbox" name="timeneed" id="id_timeneed">
-    </p>
-    <p>
-        <label for="id_weight">Weight</label>
-        <input type="checkbox" name="weight" id="id_weight">
-    </p>
-    <p>
-        <label for="id_level">Weight</label>
-        <input type="checkbox" name="level" id="id_level">
-    </p>
-    <p>
-        <label for="id_status">Weight</label>
-        <input type="checkbox" name="status" id="id_status">
-    </p>
-        <input type="submit" value="add">
+<!--  {{ form }}-->
+  {{ form.title.label }}<br>{{ form.title}}<br><br>
+  {{ form.task.label }}<br>{{ form.task}}<br><br>
+  {{ form.branch.label}}<br>{{ form.branch}}<br><br>
+  {{ form.weight.label}}<br>{{ form.weight}}<br><br>
+  {{ form.level.label}}<br>{{ form.level}}<br><br>
+  {{ form.status.label}}<br>{{ form.status}}<br><br>
+  {{ form.timeneed.label}}<br>{{ form.timeneed}}<br><br>
+
+  {{ form.projekt_id.label}}<br>{{ form.projekt_id}}<br><br>
+  <input type="submit" value="Wyślij">
 </form>
 
 {% endblock %}
