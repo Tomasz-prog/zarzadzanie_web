@@ -1,5 +1,8 @@
 from django.urls import path
-from .views import start, zadania, details, add_task, check_task, edytuj_task, add_projekt
+from .views import start, zadania, details, \
+    add_task, check_task, edytuj_task, add_projekt, delete_task, remove_task, done_task
+
+
 
 app_name = 'main'
 urlpatterns = [
@@ -10,6 +13,9 @@ urlpatterns = [
     path('main/add_task', add_task, name="add_task"),
     path('main/add_projekt', add_projekt, name="add_projekt"),
     path('main/edytuj_task/<int:id>/', edytuj_task, name="edytuj_task"),
+    path('main/remove_task/<int:zadanie_id>/', remove_task, name="remove_task"),
+    path('main/delete_task/<int:projekt_id>/', delete_task , name="delete_task"),
+    path('main/done_task/<int:projekt_id>/', done_task , name="done_task"),
     path('', start, name="start"),
 
 ]

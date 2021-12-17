@@ -6,14 +6,35 @@
 {% block content %}
 <div class="topnav">
   <a  href="{% url 'main:start' %}">lista projektów</a>
-  <a  class="active" href="{% url 'main:zadania' nr_projektu %}">Zadania</a>
+<div></div>
 
-  <a href="{% url 'main:add_task' %}">dodaj zadanie</a>
-<!--  <a href="#about">About</a>-->
+  {% if side == "delete" %}
+    <a   href="{% url 'main:zadania' nr_projektu %}">Zadania</a>
+    <a href="{% url 'main:add_task' %}">dodaj zadanie</a>
+    <a class="active" href="{% url 'main:delete_task' nr_projektu %}">usun zadanie</a>
+    <a href="{% url 'main:done_task' nr_projektu %}">done tasks</a>
+  {% elif side == "show" %}
+    <a  class="active" href="{% url 'main:zadania' nr_projektu %}">Zadania</a>
+    <a href="{% url 'main:add_task' %}">dodaj zadanie</a>
+    <a href="{% url 'main:delete_task' nr_projektu %}">usun zadanie</a>
+    <a href="{% url 'main:done_task' nr_projektu %}">done tasks</a>
+  {% else %}
+    <a href="{% url 'main:zadania' nr_projektu %}">Zadania</a>
+    <a href="{% url 'main:add_task' %}">dodaj zadanie</a>
+    <a href="{% url 'main:delete_task' nr_projektu %}">usun zadanie</a>
+    <a class="active"  href="{% url 'main:done_task' nr_projektu %}">done tasks</a>
+  {% endif %}
+
+
 </div>
 <div>
-Wybierz zadanie w celu edycji<br>
-  {{ nr_projektu }}
+  {% if side == "delete" %}
+    Usuwanie zadania <br> Wybierz zadanie do usuniecia
+  {% elif side == "show" %}
+    Edytowanie zadania <br> Wybierz zadanie do edycji
+  {% else %}
+    Zakończone zadania
+  {% endif %}
   <br><br>
 </div>
 <table id="customers">
@@ -28,10 +49,12 @@ Wybierz zadanie w celu edycji<br>
   {% for zadanie in zadania %}
   <tr>
     <td class="lp">{{ zadanie.id }}</td>
-    <td><a href="{% url 'main:check_task' zadanie.id %}">{{ zadanie.title }}</a></td>
-
-
-
+      {% if side == "delete" %}
+        <td><a href="{% url 'main:remove_task' zadanie.id %}">{{ zadanie.title }}</a></td>
+      {% else %}
+        <cos></cos>
+        <td><a href="{% url 'main:check_task' zadanie.id %}">{{ zadanie.title }}</a></td>
+      {% endif %}
 
 
     <td>{{ zadanie.get_branch_display }}</td>

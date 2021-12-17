@@ -43,6 +43,7 @@ class Task(models.Model):
     level = models.PositiveSmallIntegerField(choices=Level.LEVEL, default=0)
     status = models.PositiveSmallIntegerField(choices=Status.STATUS, default=0)
     projekt = models.ForeignKey(Projects, on_delete=models.CASCADE, default=None)
+    timeusing = models.IntegerField(blank=True, default=0)
 
     def __str__(self):
         return f"{self.id} - {self.title} : {self.created}"

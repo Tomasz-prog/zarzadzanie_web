@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_list_or_404, redirect
+from django.shortcuts import HttpResponse, render, get_list_or_404, redirect
 from task.models import Task, Projects
 from django.forms import ModelForm
 from django.contrib import messages
@@ -14,7 +14,7 @@ class ProjektForm(ModelForm):
 class TaskForm(ModelForm):
     class Meta:
         model = Task
-        fields =['title', 'task', 'branch', 'timeneed', 'weight', 'level', 'status']
+        fields =['title', 'task', 'branch', 'timeneed', 'weight', 'level', 'status', 'timeusing']
 
 def start(request):
 
@@ -27,8 +27,8 @@ def zadania(request, projekt_id: int):
 
     no_project = projekt_id
     print(f"numer projektu : {no_project}")
-    zadania = Task.objects.all().filter(projekt=projekt_id)
-    contex = {"zadania": zadania, "nr_projektu": projekt_id}
+    zadania = Task.objects.all().filter(projekt=projekt_id, status__lt=2)
+    contex = {"zadania": zadania, "nr_projektu": projekt_id, "side": "show"}
 
     return render(request, "main/lista_zadan.html", contex)
 
@@ -45,7 +45,9 @@ def add_task(request):
         obj.save()
 
 
-    return render(request, 'main/add_task.html', {'form': form, 'numer_projektu':  no_project})
+    return render(request, 'main/add_task.html', {'form': form,
+                                                  'numer_projektu':  no_project,
+                                                  'side': 'add'})
 
 def edytuj_task(request):
     task = get_list_or_404(Task, pk=id)
@@ -54,7 +56,7 @@ def edytuj_task(request):
         form.save()
         return redirect(start)
 
-    return render(request, 'main/add_task.html', {'form': form})
+    return render(request, 'main/add_task.html', {'form': form, "side": "edit"})
 
 def check_task(request, zadanie_id: int):
     # zadania = Task.objects.all().filter(id=zadanie_id)
@@ -79,4 +81,34 @@ def add_projekt(request):
         obj.save()
 
     return render(request, 'main/add_projekt.html', {'form': form})
+
+def delete_task(request, projekt_id: int):
+    global no_project
+
+    no_project = projekt_id
+    print(f"numer projektu : {no_project}")
+    zadania = Task.objects.all().filter(projekt=projekt_id)
+    contex = {"zadania": zadania, "nr_projektu": projekt_id, "side": "delete"}
+
+    return render(request, "main/lista_zadan.html", contex)
+
+def done_task(request, projekt_id: int):
+    global no_project
+
+    no_project = projekt_id
+    print(f"numer projektu : {no_project}")
+    zadania = Task.objects.all().filter(projekt=projekt_id, status=2)
+    contex = {"zadania": zadania, "nr_projektu": projekt_id, "side": "done"}
+
+    return render(request, "main/lista_zadan.html", contex)
+
+def remove_task(request, zadanie_id: int):
+    print(f"zadanie o numerze {zadanie_id} usunięto")
+    projects = Projects.objects.all()
+
+    task_to_delete = Task.objects.filter(id=zadanie_id)
+    task_to_delete.delete()
+
+
+    return render(request, "main/strona_startowa.html", {"projects": projects})
 

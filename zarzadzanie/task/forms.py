@@ -36,4 +36,4 @@ class Branch():
 class TaskForm(ModelForm):
     class Meta:
         model = Task
-        fields =['title', 'task', 'branch', 'timeneed', 'weight', 'level', 'status']
+        fields =['title', 'task', 'branch', 'timeneed', 'weight', 'level', 'status', 'timeusing']
