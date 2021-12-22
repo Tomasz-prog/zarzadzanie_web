@@ -14,12 +14,13 @@
     <a class="active" href="#contact">edycja</a>
   {% endif %}
 </div>
+
 {% if side == "add" %}
   <div>Dodawanie zadania </div>
 {% else %}
   <div>Edytowanie zadania</div>
 {% endif %}
-<form method="POST" enctype="multipart/form-data">
+<form class="formularz" method="POST" enctype="multipart/form-data">
 {% csrf_token %}
 <!--  {{ form }}-->
   {{ form.title.label }}<br>{{ form.title}}<br><br>
@@ -28,9 +29,10 @@
   {{ form.weight.label}}<br>{{ form.weight}}<br><br>
   {{ form.level.label}}<br>{{ form.level}}<br><br>
   {{ form.status.label}}<br>{{ form.status}}<br><br>
-  {{ form.timeneed.label}}<br>{{ form.timeneed}}<br><br>
+  {{ form.timeneed.label}}<br>{{ form.timeneed }}<br><br>
 
   {{ form.timeusing.label}}<br>{{ form.timeusing}}<br><br>
+  {{ form.timedone.label}}<br>{{ form.timedone}}<br><br>
 
   {{ form.projekt_id.label}}<br>{{ form.projekt_id}}<br><br>
   <input type="submit" value="Wyślij">

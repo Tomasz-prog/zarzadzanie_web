@@ -23,16 +23,6 @@ class Branch():
     BRANCH = ((TODO, 'todo'), (POTTENTIAL_ERRORS, 'potencjalne błedy użytkownika'), (FOUND, 'znalezione błędy'))
 
 
-# class TaskForm(ModelForm):
-#
-#     title = forms.CharField(label="name", max_length=255)
-#     task = forms.CharField(label="task")
-#     branch = forms.CharField(label='type of task', widget=forms.Select(choices=Branch.BRANCH))
-#     timeneed = forms.IntegerField()
-#     weight = forms.CharField(label="weight", widget=forms.Select(choices=Weight.WEIGHT))
-#     level = forms.CharField(label="level", widget=forms.Select(choices=Level.LEVEL))
-#     status = forms.CharField(label="status", widget=forms.Select(choices=Status.STATUS))
-
 class TaskForm(ModelForm):
     class Meta:
         model = Task

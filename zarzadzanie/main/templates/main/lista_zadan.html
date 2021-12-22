@@ -6,7 +6,7 @@
 {% block content %}
 <div class="topnav">
   <a  href="{% url 'main:start' %}">lista projektów</a>
-<div></div>
+
 
   {% if side == "delete" %}
     <a   href="{% url 'main:zadania' nr_projektu %}">Zadania</a>
@@ -24,9 +24,8 @@
     <a href="{% url 'main:delete_task' nr_projektu %}">usun zadanie</a>
     <a class="active"  href="{% url 'main:done_task' nr_projektu %}">done tasks</a>
   {% endif %}
-
-
 </div>
+
 <div>
   {% if side == "delete" %}
     Usuwanie zadania <br> Wybierz zadanie do usuniecia
@@ -37,6 +36,20 @@
   {% endif %}
   <br><br>
 </div>
+<hr>
+<div class="nazwa-projektu">
+  {{ nazwa_projektu }}<br>
+
+</div>
+<header>
+  {% if side == "done" %}
+    <p>Time need {{ suma_timeneed_done }} godzin</p>
+    <p>Time done {{ suma_done_done }} godzin</p>
+  {% else %}
+    <p>Time need {{ time_need }} godzin</p>
+    <p>Time done {{ time_done }} godzin</p>
+  {% endif %}
+</header>
 <table id="customers">
   <tr>
     <th class="lp">Lp</th>
@@ -45,10 +58,12 @@
     <th>difficulty</th>
     <th>weight</th>
     <th>status</th>
+    <th>donetime</th>
+    <th>needtime</th>
   </tr>
   {% for zadanie in zadania %}
-  <tr>
-    <td class="lp">{{ zadanie.id }}</td>
+  <tr class="lp">
+    <td class="lp">{{ forloop.counter }}</td>
       {% if side == "delete" %}
         <td><a href="{% url 'main:remove_task' zadanie.id %}">{{ zadanie.title }}</a></td>
       {% else %}
@@ -63,7 +78,13 @@
     <td>{{ zadanie.get_level_display }}</td>
     <td>{{ zadanie.get_weight_display }}</td>
     <td>{{ zadanie.get_status_display }}</td>
+    <td>{{ zadanie.timedone }}</td>
+    <td>{{ zadanie.timeneed }}</td>
   </tr>
   {% endfor %}
 </table>
+<div class="informacja">
+  {{ is_task }}
+
+</div>
 {% endblock %}

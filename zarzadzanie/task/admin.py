@@ -5,6 +5,7 @@ class TaskAdmin(admin.ModelAdmin):
     list_display = ['id', 'title', 'created', 'modified', 'branch', 'weight',
                     'level', 'status', 'projekt']
     search_fields = ['title', 'projekt']
-admin.site.register(Task, TaskAdmin)
+    list_filter = ['branch', 'weight', 'level', 'projekt']
 
+admin.site.register(Task, TaskAdmin)
 admin.site.register(Projects)

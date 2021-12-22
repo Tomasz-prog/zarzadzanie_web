@@ -19,12 +19,14 @@ Wybierz projekt
   <tr>
     <th class="lp">Lp</th>
     <th>Project</th>
+    <th>donetime</th>
+    <th>needtime</th>
   </tr>
 
   {% for projekt in projects %}
 
-  <tr>
-    <td class="lp">{{ projekt.id}}</td>
+  <tr class="lp">
+    <td class="lp">{{ forloop.counter }}</td>
     <td><a href="{%  url 'main:zadania' projekt.id %}">{{ projekt.project }}</a></td>
 
   </tr>
