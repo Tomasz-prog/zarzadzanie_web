@@ -25,7 +25,14 @@
     <a class="active"  href="{% url 'main:done_task' nr_projektu %}">done tasks</a>
   {% endif %}
 </div>
-
+<div>
+    {% if user.is_authenticated %}
+    <h1 class="display-4"> Zalogowany jako {{ user.username }}</h1>
+{#    <a href="{% url 'logout' %}" class="btn btn-success">Logout <i class="fas fa-sign-out-alt"></i></a>#}
+{% else %}
+        <br><div>Nie jesteś zalogowany </div><br>
+{% endif %}
+</div>
 <div>
   {% if side == "delete" %}
     Usuwanie zadania <br> Wybierz zadanie do usuniecia
@@ -57,7 +64,7 @@
     <th>Branch</th>
     <th>difficulty</th>
     <th>weight</th>
-    <th>status</th>
+q    <th>status</th>
     <th>donetime</th>
     <th>needtime</th>
   </tr>

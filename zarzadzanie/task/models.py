@@ -3,12 +3,17 @@ from .database import Database as Db
 
 
 
+class Uzytkownik(models.Model):
+    pass
+
+
 class Projects(models.Model):
     project = models.CharField(max_length=255, blank=True, unique=True)
     created = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey("auth.User", on_delete=models.CASCADE, default=1)
 
     def __str__(self):
-        return f"{self.id} - {self.project}"
+        return f"{self.id} - {self.project}, {self.user}"
 
 class Weight():
 
@@ -27,8 +32,9 @@ class Status():
 
 class Branch():
 
-    TODO, POTTENTIAL_ERRORS, FOUND = 0, 1, 2
-    BRANCH = ((TODO, 'todo'), (POTTENTIAL_ERRORS, 'potencjalne błedy użytkownika'), (FOUND, 'znalezione błędy'))
+    TODO, POTTENTIAL_ERRORS, FOUND, IMPLEMENTATIONS, CSS = 0, 1, 2, 3, 4
+    BRANCH = ((TODO, 'todo'), (POTTENTIAL_ERRORS, 'potencjalne błedy użytkownika'), (FOUND, 'znalezione błędy'),
+              (IMPLEMENTATIONS, 'usprawnienia'), (CSS, 'CSS'))
 
 class Task(models.Model):
 
@@ -44,6 +50,7 @@ class Task(models.Model):
     status = models.PositiveSmallIntegerField(choices=Status.STATUS, default=0)
     projekt = models.ForeignKey(Projects, on_delete=models.CASCADE, default=None)
     timeusing = models.IntegerField(blank=True, default=0)
+    user = models.ForeignKey("auth.User", on_delete=models.CASCADE, default=1)
 
     def __str__(self):
         return f"{self.id} - {self.title} : {self.created}"

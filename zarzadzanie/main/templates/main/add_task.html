@@ -13,6 +13,14 @@
     <a href="{% url 'main:zadania' numer_projektu %}">Zadania</a>
     <a class="active" href="#contact">edycja</a>
   {% endif %}
+<div>
+    {% if user.is_authenticated %}
+    <h1 class="display-4"> Witaj {{ user.username }}</h1>
+{#    <a href="{% url 'logout' %}" class="btn btn-success">Logout <i class="fas fa-sign-out-alt"></i></a>#}
+{% else %}
+        <br><div>Nie jesteś zalogowany </div><br>
+{% endif %}
+</div>
 </div>
 
 {% if side == "add" %}
@@ -30,11 +38,9 @@
   {{ form.level.label}}<br>{{ form.level}}<br><br>
   {{ form.status.label}}<br>{{ form.status}}<br><br>
   {{ form.timeneed.label}}<br>{{ form.timeneed }}<br><br>
-
-  {{ form.timeusing.label}}<br>{{ form.timeusing}}<br><br>
   {{ form.timedone.label}}<br>{{ form.timedone}}<br><br>
-
   {{ form.projekt_id.label}}<br>{{ form.projekt_id}}<br><br>
+
   <input type="submit" value="Wyślij">
 </form>
 

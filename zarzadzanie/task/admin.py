@@ -3,7 +3,7 @@ from .models import Task, Projects
 
 class TaskAdmin(admin.ModelAdmin):
     list_display = ['id', 'title', 'created', 'modified', 'branch', 'weight',
-                    'level', 'status', 'projekt']
+                    'level', 'status', 'projekt', 'user']
     search_fields = ['title', 'projekt']
     list_filter = ['branch', 'weight', 'level', 'projekt']
 

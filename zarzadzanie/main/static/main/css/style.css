@@ -1,13 +1,18 @@
+
+
 body
 {
     background-color: rgb(0,0,0);
 }
 
+h1 {
+  color: white;
+}
 div
 
 {
     color: antiquewhite;
-    font-size: 3em
+    font-size: 1em
 ;
 }
 
@@ -92,4 +97,10 @@ header {
 .informacja {
     color: white;
     font-size: 2em;
+}
+
+#messages {
+
+  color: white;
+  font-size: 4em;
 }

@@ -1,20 +1,161 @@
 from django.shortcuts import HttpResponse, render, get_list_or_404, redirect
 from task.models import Task, Projects
 from django.forms import ModelForm
+from django import forms
 from django.db.models import Sum
 from django.db.models import Q
 from django.contrib.auth.models import User
-
-
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import (authenticate, get_user_model, login, logout)
+
 # from .models import Task
 
 global no_project
 
+
+
+User = get_user_model()
+
+class UserLoginForm(forms.Form):
+    username = forms.CharField()
+    password = forms.CharField(widget=forms.PasswordInput)
+
+    def clean(self, *args, **kwargs):
+        username = self.cleaned_data.get('username')
+        password = self.cleaned_data.get('password')
+
+        if username and password:
+            user = authenticate(username=username, password=password)
+            if not user:
+                raise forms.ValidationError('This user does not exist')
+            if not user.check_password(password):
+                raise forms.ValidationError('Incorrect password')
+            if not user.is_active:
+                raise forms.ValidationError('This user is not active')
+
+        return super(UserLoginForm, self).clean(*args, **kwargs)
+
+class UserRegisterForm(forms.ModelForm):
+    email = forms.EmailField(label='Email address')
+    email2 = forms.EmailField(label='confirm address')
+    password = forms.CharField(widget=forms.PasswordInput)
+
+    class Meta:
+        model = User
+        fields = [
+            'username',
+            'email',
+            'email2',
+            'password'
+        ]
+
+    def clean_email(self):
+
+        email = self.cleaned_data.get('email')
+        email2 = self.cleaned_data.get('email2')
+        if email != email2:
+            raise forms.ValidationError("emails must match")
+        email_qs = User.objects.filter(email=email)
+        if email_qs.exists():
+            raise forms.ValidationError(
+                "This email is already being used"
+            )
+        return email
+
+
+
+def login_view(request):
+    next = request.GET.get('next')
+    form = UserLoginForm(request.POST or None)
+
+    if form.is_valid():
+
+        username = form.cleaned_data.get('username')
+        password = form.cleaned_data.get('password')
+        user = authenticate(username=username, password=password)
+        login(request, user)
+        print('logowanie')
+        uzytkownik = User.objects.get(username=username)
+        print(uzytkownik.id)
+        projects = Projects.objects.filter(user=uzytkownik.id)
+        contex = {"projects": projects, "user_id": uzytkownik.id}
+        if next:
+            return redirect(next)
+        return render(request,'strona_startowa.html', contex)
+
+    contex = {
+        'form': form,
+    }
+    return render(request, "login.html", contex)
+
+
+class MySignUpForm(UserCreationForm):
+    email = forms.EmailField()
+
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'password1', 'password2']
+
+    def save(self, commit=True):
+        user = super(MySignUpForm, self).save(commit=False)
+        user.email = self.cleaned_data['email']
+        user.username = self.cleaned_data['username']
+
+        if commit:
+            user.save()
+
+        return user
+
 class UserForm(ModelForm):
     class Meta:
         model = User
-        fields = ['username', 'email', 'password']
+        fields = ['username', 'password']
+
+def wylogowanie(request):
+    obj = 'something'
+    print('wylogowanie')
+    return redirect('https://google.com')
+
+def logowanie(request):
+    pass
+    # if request.method == "POST":
+    #     username = request.POST.get('username')
+    #     password = request.POST.get('password')
+    #
+    #     user = authenticate(request, username=username, password=password)
+    #
+    #     if user is not None:
+    #         login(request, user)
+    #         contex = {'logowanie': 'ok'}
+    #         print('wszystko dziala')
+    #         print(f"drukowanie usera w konsoli zalogowanego {user.username}")
+    #         # return redirect('strona_startowa.html')
+    #         messages.success(request, f"Uzytkownik {user} został zalogowany")
+    #         return render(request, 'main/strona_startowa.html', contex)
+    # contex = {}
+    #
+    # return render(request, 'main/login.html', contex)
+
+def rejestracja(request):
+
+    if request.method == 'POST':
+        form = MySignUpForm(request.POST)
+        if form.is_valid():
+            form.save()
+            user = form.cleaned_data.get('username')
+            messages.success(request, "Konto zostało założone dla " + user)
+
+    form = MySignUpForm()
+    contex = {'form': form}
+    return render(request, 'main/register.html', contex)
+
+
+
+
 
 class ProjektForm(ModelForm):
     class Meta:
@@ -24,9 +165,9 @@ class ProjektForm(ModelForm):
 class TaskForm(ModelForm):
     class Meta:
         model = Task
-        fields =['title', 'task', 'branch', 'timeneed', 'weight', 'level', 'status', 'timeusing', 'timedone']
+        fields =['title', 'task', 'branch', 'timeneed', 'weight', 'level', 'status', 'timedone']
 
-def add_user(request):
+def add_users(request):
     form = UserForm(request.POST or None)
     if form.is_valid():
         obj = form.save(commit=False)
@@ -34,20 +175,15 @@ def add_user(request):
 
     return render(request, 'main/add_users.html', {'form': form})
 
+@login_required
 def start(request):
 
-    all_task = Task.objects.all()
-    projects = Projects.objects.all()
-    # lista = Projects.objects.values_list()
-    # suma_minut_timeneed = []
-    # for i in lista:
-    #
-    #     val = i[0]
-    #     suma = Task.objects.filter(projekt_id=val).aggregate(Sum('timeneed'))
-    #     suma_minut_timeneed.append(suma)
-    # print(suma_minut_timeneed)
-    return render(request, "main/strona_startowa.html", {"projects": projects})
+    projects = request.GET.get('user')
+    projects = Projects.objects.filter(user=1)
+    print(projects)
+    return render(request, "strona_startowa.html", {"projects": projects})
 
+@login_required
 def zadania(request, projekt_id: int):
     global no_project
 
@@ -102,7 +238,7 @@ def add_task(request):
     return render(request, 'main/add_task.html', {'form': form,
                                                   'numer_projektu':  no_project,
                                                   'side': 'add'})
-
+@login_required
 def edytuj_task(request):
     task = get_list_or_404(Task, pk=id)
     form = TaskForm(request.POST or None, instance=Task)
@@ -121,7 +257,7 @@ def edytuj_task(request):
         return redirect(start)
 
     return render(request, 'main/add_task.html', {'form': form, "side": "edit"})
-
+@login_required
 def check_task(request, zadanie_id: int):
     # zadania = Task.objects.all().filter(id=zadanie_id)
     # contex = {"zadania": zadania}
@@ -146,7 +282,7 @@ def check_task(request, zadanie_id: int):
 
     return render(request, 'main/add_task.html', {'form': form, 'numer_projektu':  no_project})
 
-
+@login_required
 def add_projekt(request):
 
     form = ProjektForm(request.POST or None)
@@ -165,7 +301,7 @@ def delete_task(request, projekt_id: int):
     contex = {"zadania": zadania, "nr_projektu": projekt_id, "side": "delete"}
 
     return render(request, "main/lista_zadan.html", contex)
-
+@login_required
 def done_task(request, projekt_id: int):
     global no_project
 
@@ -183,6 +319,7 @@ def done_task(request, projekt_id: int):
 
     return render(request, "main/lista_zadan.html", contex)
 
+@login_required
 def remove_task(request, zadanie_id: int):
     print(f"zadanie o numerze {zadanie_id} usunięto")
     projects = Projects.objects.all()

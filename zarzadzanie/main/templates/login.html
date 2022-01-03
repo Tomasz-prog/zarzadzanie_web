@@ -1,0 +1,29 @@
+{% extends 'base.html'%}
+{% load static %}
+
+{% block title %}logowanie{% endblock %}
+{% block content %}
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+<div class="topnav">
+  <a href="{% url 'main:start' %}">lista projektów</a>
+  <a class="active" href="#contact">Logowanie użytkownika</a>
+    <a href="{% url 'main:rejestracja' %}">Dodaj użytkownika</a>
+<!--  <a href="#about">About</a>-->
+</div>
+<br>
+
+<div> test </div>
+<div class="card" style="width: 26rem;">
+      <div class="card-body">
+        <h5 class="card-title">Zaloguj się</h5>
+        <form method="post">
+            {% csrf_token %}
+            {{ form }}
+            <button type="submit" class="btn btn-primary">Zaloguj <i class="fas fa-sign-in-alt"></i></button>
+        </form>
+      </div>
+    </div>
+
+{% endblock %}
+

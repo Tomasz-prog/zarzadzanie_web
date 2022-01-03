@@ -1,0 +1,31 @@
+{% extends 'base.html'%}
+{% load static %}
+
+{% block title %}rejestracja{% endblock %}
+{% block content %}
+
+
+<div class="topnav">
+  <a href="{% url 'main:start' %}">lista projektów</a>
+  <a class="active" href="#contact">Rejestracja użytkownika</a>
+<!--  <a href="#about">About</a>-->
+</div>
+<br>
+    <h1>Rejestracja</h1>
+    {%  for message in messages %}
+        <p id="messages">{{ message }}</p>
+    {%  endfor %}
+        <div>
+            <form method="post" action="">
+                {% csrf_token %}
+                {% for field in form %}
+                    {{ field.label }}
+                    {{ field }}
+                    <br><br>
+                {% endfor %}
+                <input type="submit" value="Zarejestruj">
+            </form>
+        </div>
+
+
+{% endblock %}

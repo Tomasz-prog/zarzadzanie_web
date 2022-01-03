@@ -4,13 +4,34 @@
 
 {% block title %}główna{% endblock %}
 {% block content %}
+
 <div class="topnav">
-  <a class="active" href="{% url 'main:start' %}">lista projektów</a>
+  <a class="active" href="{% url 'main:start'  %}">lista projektów</a>
   <a href="{% url 'main:add_projekt' %}">Dodaj projekt</a>
+  <a href="{% url 'main:rejestracja' %}">Dodaj użytkownika</a>
+  <a href="{% url 'main:login' %}">Zaloguj się</a>
+  <a href="{% url 'main:logout' %}">Wyloguj</a>
 
 <!--  <a href="{% url 'main:details' %}">Contact</a>-->
 <!--  <a href="#about">About</a>-->
 </div>
+<div>
+    {% if user.is_authenticated %}
+    <h1 class="display-4"> Witaj {{ user.username }}</h1>
+{#    <a href="{% url 'logout' %}" class="btn btn-success">Logout <i class="fas fa-sign-out-alt"></i></a>#}
+{% else %}
+        <br><div>Nie jesteś zalogowany </div><br>
+{% endif %}
+uwaga {{  user_id }}
+
+</div>
+
+<div id="messages">
+   {% for message in messages %}
+        {{ message }}
+   {% endfor %}
+</div>
+
 <div>
 Wybierz projekt
   <br><br>
