@@ -69,6 +69,8 @@ class UserRegisterForm(forms.ModelForm):
 
 
 def login_view(request):
+
+    global numer_usera
     next = request.GET.get('next')
     form = UserLoginForm(request.POST or None)
 
@@ -80,7 +82,7 @@ def login_view(request):
         login(request, user)
         print('logowanie')
         uzytkownik = User.objects.get(username=username)
-        print(uzytkownik.id)
+        numer_usera = uzytkownik.id
         projects = Projects.objects.filter(user=uzytkownik.id)
         contex = {"projects": projects, "user_id": uzytkownik.id}
         if next:
@@ -178,9 +180,9 @@ def add_users(request):
 @login_required
 def start(request):
 
-    projects = request.GET.get('user')
-    projects = Projects.objects.filter(user=1)
-    print(projects)
+    global numer_usera
+    projects = Projects.objects.filter(user=numer_usera)
+
     return render(request, "strona_startowa.html", {"projects": projects})
 
 @login_required
