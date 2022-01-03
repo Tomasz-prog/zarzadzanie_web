@@ -179,9 +179,12 @@ def add_users(request):
 
 @login_required
 def start(request):
+    try:
+        global numer_usera
 
-    global numer_usera
-    projects = Projects.objects.filter(user=numer_usera)
+        projects = Projects.objects.filter(user=numer_usera)
+    except:
+        projects = None
 
     return render(request, "strona_startowa.html", {"projects": projects})
 
