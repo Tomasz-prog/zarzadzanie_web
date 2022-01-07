@@ -111,6 +111,10 @@ class MySignUpForm(UserCreationForm):
             user.save()
 
         return user
+class WeightForm(ModelForm):
+    class Meta:
+        fields = ['']
+
 
 class UserForm(ModelForm):
     class Meta:
@@ -190,14 +194,15 @@ def start(request):
 
 @login_required
 def zadania(request, projekt_id: int):
-    global no_project
 
+    global no_project
     no_project = projekt_id
-    print(f"numer projektu : {no_project}")
-    zadania = Task.objects.all().filter(projekt=projekt_id, status__lt=2)
+    poziom = "Wszystkie"
+    waga = "Wszystkie"
     projekt = Projects.objects.filter(id=no_project)
     name_of_projekt = projekt[0].project
     suma_need = Task.objects.filter(projekt_id=no_project).exclude(status=2).aggregate(Sum('timeneed'))
+    zadania = Task.objects.all().filter(projekt=projekt_id, status__lt=2)
 
     if suma_need['timeneed__sum'] != None:
 
@@ -215,11 +220,75 @@ def zadania(request, projekt_id: int):
         suma_done = 0
         info_o_zadaniach = "DODAJ ZADANIE"
 
+
+
+# ----------------- filtrów zadania względem wagi ----------------
+    # weight_list = ['minor', 'major', 'critical']
+    if request.method == 'POST':
+        weight = request.POST.getlist('weight')
+        print(weight)
+        if weight == ['Minor']:
+            print('wybrano minor')
+            zadania = Task.objects.all().filter(projekt=projekt_id, status__lt=2, weight=0)
+            waga = "Minor"
+        elif weight == ['Major']:
+            zadania = Task.objects.all().filter(projekt=projekt_id, status__lt=2, weight=1)
+            waga = "Major"
+        elif weight == ['Critical']:
+            zadania = Task.objects.all().filter(projekt=projekt_id, status__lt=2, weight=2)
+            waga = "Critical"
+        elif weight == ['Minor', 'Major']:
+            zadania = Task.objects.all().filter(projekt=projekt_id, status__lt=2, weight__lt=2)
+            waga = "Minor, Major"
+        elif weight == ['Minor', 'Critical']:
+            zadania = Task.objects.all().filter(projekt=projekt_id, status__lt=2)
+            zadania = zadania.exclude(weight=1)
+            waga = "Minor, Critical"
+        elif weight == ['Major', 'Critical']:
+            zadania = Task.objects.all().filter(projekt=projekt_id, status__lt=2, weight__gt=0)
+            waga = "Major, Critical"
+
+        else:
+            zadania = Task.objects.all().filter(projekt=projekt_id, status__lt=2)
+            waga = "Wszystkie"
+
+# ------------------- filtruje zadania względem poziomu trudności ---------------------------
+
+        level = request.POST.getlist('level')
+
+        if level == ['Easy']:
+            print('wybrano easy')
+            zadania = zadania.filter(level=0)
+            poziom = "Easy"
+        elif level == ['Medium']:
+            zadania = zadania.filter(level=1)
+            poziom = "Medium"
+        elif level == ['Hard']:
+            zadania = zadania.filter(level=2)
+            poziom = "Hard"
+        elif level == ['Easy', 'Medium']:
+            zadania = zadania.filter(level__lt=2)
+            poziom = "Easy, Medium"
+        elif level == ['Easy', 'Hard']:
+            zadania = zadania.exclude(level=1)
+            poziom = "Easy, Hard"
+        elif level == ['Medium', 'Hard']:
+            zadania = zadania.filter(level_gt=1)
+            poziom = "Medium, Hard"
+
+        else:
+            poziom = "Wszystkie"
+
     contex = {"zadania": zadania, "nr_projektu": projekt_id, "side": "show",
               "time_need": suma_czas_do_skonczenia, "time_done": suma_done, "is_task": info_o_zadaniach,
-              "nazwa_projektu": name_of_projekt}
+              "nazwa_projektu": name_of_projekt, "waga": waga, "poziom": poziom}
 
     return render(request, "main/lista_zadan.html", contex)
+
+
+
+
+
 
 def details(request):
 
@@ -328,10 +397,53 @@ def done_task(request, projekt_id: int):
 def remove_task(request, zadanie_id: int):
     print(f"zadanie o numerze {zadanie_id} usunięto")
     projects = Projects.objects.all()
+    global no_project
+
+    print(f"numer projektu : {no_project}")
+    zadania = Task.objects.all().filter(projekt=no_project, status__lt=2)
+    projekt = Projects.objects.filter(id=no_project)
+    name_of_projekt = projekt[0].project
+    suma_need = Task.objects.filter(projekt_id=no_project).exclude(status=2).aggregate(Sum('timeneed'))
+
+    if suma_need['timeneed__sum'] != None:
+
+        suma_done_min = Task.objects.filter(projekt_id=no_project).exclude(status=2).aggregate(Sum('timedone'))
+        suma_done_done = Task.objects.filter(projekt_id=no_project, status=2).aggregate(Sum('timedone'))
+
+        if suma_done_done["timedone__sum"] == None:
+            suma_done_done["timedone__sum"] = 0
+
+        suma_done = round(float((suma_done_min["timedone__sum"]/60)) + float((suma_done_done["timedone__sum"] / 60)), 2)
+        suma_czas_do_skonczenia = round((suma_need["timeneed__sum"] - suma_done_min["timedone__sum"])/60, 2)
+        info_o_zadaniach = ""
+    else:
+        suma_czas_do_skonczenia = 0
+        suma_done = 0
+        info_o_zadaniach = "DODAJ ZADANIE"
+
 
     task_to_delete = Task.objects.filter(id=zadanie_id)
     task_to_delete.delete()
 
+    contex = {"zadania": zadania, "nr_projektu": no_project, "side": "show",
+              "nazwa_projektu": name_of_projekt,
+              "time_need": suma_czas_do_skonczenia, "time_done": suma_done, "is_task": info_o_zadaniach}
 
-    return render(request, "main/strona_startowa.html", {"projects": projects})
+
+
+    return render(request, "main/lista_zadan.html", contex)
+
+def lista_zadan_choice(request):
+
+    weight_list = ['minor', 'major', 'critical']
+    if request.method == 'POST':
+        weight = request.POST.getlist('weight')
+        print(weight)
+        if weight == ['minor']:
+            print('MINOR')
+        if weight == ['major']:
+            print('MAJOR')
+        if weight == ['critical']:
+            print('CRITICAL')
+    return render(request, 'main/test.html')
 

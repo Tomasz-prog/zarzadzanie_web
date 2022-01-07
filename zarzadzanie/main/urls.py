@@ -2,7 +2,7 @@ from django.urls import path, include
 from .views import start, zadania, details, \
     add_task, check_task, edytuj_task, add_projekt, \
     delete_task, remove_task, done_task, add_users, \
-    rejestracja, logowanie, wylogowanie, login_view
+    rejestracja, logowanie, wylogowanie, login_view, lista_zadan_choice
 from django.contrib.auth import views as auth_views
 
 
@@ -26,7 +26,7 @@ urlpatterns = [
     # path('main/login', auth_views.LoginView.as_view(), name="login"),
     path('main/logout', auth_views.LogoutView.as_view(), name="logout"),
     path('', start, name="start"),
-
+    path('main/test', lista_zadan_choice,name='lista_zadan_choice')
 
 ]
 # urlpatterns += [

@@ -25,6 +25,38 @@
     <a class="active"  href="{% url 'main:done_task' nr_projektu %}">done tasks</a>
   {% endif %}
 </div>
+<form action="" method="post">
+    {% csrf_token %}
+
+    <div class="form_check">
+        <p>
+        <input type="checkbox" value="Minor" id="minor" name="weight">
+        <label for="minor">Minor</label>
+
+        <input type="checkbox" value="Major" id="major" name="weight">
+        <label for="major">Major</label>
+
+        <input type="checkbox" value="Critical" id="critical" name="weight">
+        <label for="critical">Critical</label>
+    </p>
+    </div>
+    <div class="form_check">
+        <p>
+        <input type="checkbox" value="Easy" id="easy" name="level">
+        <label for="easy">Easy</label>
+
+        <input type="checkbox" value="Medium" id="medium" name="level">
+        <label for="medium">Medium</label>
+
+        <input type="checkbox" value="Hard" id="hard" name="level">
+        <label for="hard">Hard</label>
+        </p>
+</div>
+
+
+    <button type="submit">submit</button>
+
+</form>
 <div>
     {% if user.is_authenticated %}
     <h1 class="display-4"> Zalogowany jako {{ user.username }}</h1>
@@ -38,6 +70,7 @@
     Usuwanie zadania <br> Wybierz zadanie do usuniecia
   {% elif side == "show" %}
     Edytowanie zadania <br> Wybierz zadanie do edycji
+
   {% else %}
     Zakończone zadania
   {% endif %}
@@ -56,6 +89,8 @@
     <p>Time need {{ time_need }} godzin</p>
     <p>Time done {{ time_done }} godzin</p>
   {% endif %}
+Waga: {{ waga }}<br>
+Poziom: {{ poziom }}
 </header>
 <table id="customers">
   <tr>
